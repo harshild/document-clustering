@@ -1,12 +1,13 @@
 import os
+import re
 
 import html2text
 
 
-def get_tokens(file_data, punctuations):
+def get_tokens(file_data):
     token_dict = {}
-    for punctuation in punctuations:
-        file_data = file_data.replace(punctuation, " ")
+    file_data = file_data.lower()
+    file_data = re.sub("[^a-z]", " ", file_data)
 
     for token in file_data.split(" "):
         stripped_token = token.strip()
@@ -38,10 +39,11 @@ def tokenize(input_file_list):
         with open("./files/" + filename, 'r', encoding="latin-1", errors="surrogateescape") as f:
             print(f.name)
             file_data = get_file_data(f.read())
-            file_tokens = get_tokens(file_data,["\n","\t",",","!","-","|","[","]","(",")","*"])
+            file_tokens = get_tokens(file_data)
 
             file_tokens_sorted_key = sorted(file_tokens.items(), key=lambda tf: (tf[0], tf[1]))
             write_tokens_to_file(filename.split(".html")[0], "token", file_tokens_sorted_key)
+
             file_tokens_sorted_count = sorted(file_tokens.items(), key=lambda tf: (tf[1], tf[0]))
             write_tokens_to_file(filename.split(".html")[0], "frequency", file_tokens_sorted_count)
 
@@ -49,6 +51,7 @@ def tokenize(input_file_list):
 def get_file_data(html_data):
     h = html2text.HTML2Text()
     h.ignore_links = True
+    h.ignore_images = True
     data = h.handle(html_data)
     return data
 
