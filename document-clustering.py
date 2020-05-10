@@ -3,10 +3,11 @@ import os
 import html2text
 
 
-def get_tokens(file_data):
+def get_tokens(file_data, punctuations):
     token_dict = {}
-    file_data = file_data.replace("\n", " ")
-    file_data = file_data.replace("\t", " ")
+    for punctuation in punctuations:
+        file_data = file_data.replace(punctuation, " ")
+
     for token in file_data.split(" "):
         stripped_token = token.strip()
         if stripped_token != "":
@@ -29,7 +30,7 @@ def main():
     input_file_list = os.listdir(os.curdir + "/files/")
 
     #Step1
-    tokenize(input_file_list)
+    tokenize(input_file_list[:1])
 
 
 def tokenize(input_file_list):
@@ -37,7 +38,7 @@ def tokenize(input_file_list):
         with open("./files/" + filename, 'r', encoding="latin-1", errors="surrogateescape") as f:
             print(f.name)
             file_data = get_file_data(f.read())
-            file_tokens = get_tokens(file_data)
+            file_tokens = get_tokens(file_data,["\n","\t",",","!","-","|","[","]","(",")","*"])
 
             file_tokens_sorted_key = sorted(file_tokens.items(), key=lambda tf: (tf[0], tf[1]))
             write_tokens_to_file(filename.split(".html")[0], "token", file_tokens_sorted_key)
@@ -47,6 +48,7 @@ def tokenize(input_file_list):
 
 def get_file_data(html_data):
     h = html2text.HTML2Text()
+    h.ignore_links = True
     data = h.handle(html_data)
     return data
 
