@@ -27,6 +27,12 @@ def write_tokens_to_file(file_name, sorted_by, tokens_list):
 
 def main():
     input_file_list = os.listdir(os.curdir + "/files/")
+
+    #Step1
+    tokenize(input_file_list)
+
+
+def tokenize(input_file_list):
     for filename in sorted(input_file_list[:]):
         with open("./files/" + filename, 'r', encoding="latin-1", errors="surrogateescape") as f:
             print(f.name)
